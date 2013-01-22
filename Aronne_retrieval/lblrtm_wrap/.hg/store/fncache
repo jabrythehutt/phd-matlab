@@ -1,0 +1,9 @@
+data/.hgignore.i
+data/compute_K_from_AJ.m.i
+data/create_tape5.m.i
+data/example_runs.m.i
+data/fftscan_lbl_files.m.i
+data/lbl_read.m.i
+data/read_tape7.m.i
+data/simple_matlab_AJ_lblrun.m.i
+data/simple_matlab_lblrun.m.i

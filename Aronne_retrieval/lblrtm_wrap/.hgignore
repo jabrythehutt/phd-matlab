@@ -1,0 +1,4 @@
+syntax: glob
+*~
+*.mat
+.DS_Store
