@@ -12,6 +12,7 @@ end
 
 relIx  = false(size(fileNames));
 obsAlts = zeros(size(fileNames));
+legStrings = cell(size(fileNames));
 %dirns = false(size(fileNames));
 wn = [];
 
@@ -32,7 +33,15 @@ for i =1:length(fileNames)
                 
                 args = result.args;
                 hbound = args{end};
+                
                 obsAlts(i) = hbound(1);
+                dirnStr = ' (u)';
+                
+                if hbound(3)==0.0
+                    dirnStr = ' (d)';
+                end
+                
+                legStrings{i}= [num2str(hbound(1)),'km',dirnStr];
                 %dirns(i) = hbound(3)==180;
                 
             end
@@ -52,9 +61,16 @@ for i =1:length(fileNames)
     
 end
 
+obsAlts = obsAlts(relIx);
+
+[obsAlts,ix]=sort(obsAlts);
 
 fileNames  = fileNames(relIx);
-obsAlts = obsAlts(relIx);
+fileNames = fileNames(ix);
+
+legStrings = legStrings(relIx);
+legStrings = legStrings(ix);
+
 %dirns = dirns(relIx);
 fomLims = zeros(1,2);
 plotArrs = cell(1,2);
@@ -84,6 +100,7 @@ for i = 1:length(fileNames)
             
             arr = plotArrs{j};
             
+            
         end
         
         arr(i,:)=selectedChannels*fom;
@@ -96,14 +113,12 @@ for i = 1:length(fileNames)
             arr(i,chan)=fomAdded;
             fomLims(1)=min([fomLims(1),fomAdded]);
             fomLims(2)=max([fomLims(2),fomAdded]);
-
+            
             
         end
         
         
         plotArrs{j} = arr;
-        
-
 
     end
     
@@ -124,16 +139,49 @@ for j = 1:2
     
     arr = plotArrs{j};
     figH(j)=figure;
-    pcolor(wn,obsAlts,arr);
+    
+    
+    for i = 1:length(obsAlts)
+        
+        plH = plot(wn,arr(i,:),'*');
+        
+        set(plH,'Color',generateColorSpec(i,length(obsAlts)));
+       
+        if(i==1)
+            
+            hold on;
+        end
+        
+    end
+    
+    hold off;
+
+    
     axH(j)=gca;
+    set(gca,'YScale','log');
     %set(a,'edgecolor','none');
-    shading 'flat';
+    %shading 'flat';
+    xlim([min(wn),max(wn)]);
 
     xlabel('Wavenumber (cm^-^1)','fontsize',12);
-    ylabel('Observer altitude (km)','fontsize',12);
+    ylabel('Information added (DOF)','fontsize',12);
+    
     %cBarH(j) = colorbar;
-    colorbar;
+    %colorbar;
     title(titleString,'fontsize',14);
+    
+    set(figH(j),'Position',get(0,'Screensize'));
+    legend(legStrings,'Location','best');
+    
+    exStr = '_hn';
+    
+    if j==1
+        exStr = '_ln';
+        
+    end
+    
+    saveas(figH(j),[ttle,exStr,'.fig'],'fig');
+    saveas(figH(j),[ttle,exStr,'.eps'],'eps');
     
 end
 
