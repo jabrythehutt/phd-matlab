@@ -181,7 +181,7 @@ for j = 1:2
     end
     
     saveas(figH(j),[ttle,exStr,'.fig'],'fig');
-    saveas(figH(j),[ttle,exStr,'.eps'],'eps');
+    saveas(figH(j),[ttle,exStr,'.eps'],'psc2');
     
 end
 
