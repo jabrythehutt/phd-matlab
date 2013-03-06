@@ -1,8 +1,9 @@
 %pathToProfile = '/home/dj104/Retrieval/Aronne_retrieval/Profiles/MIDLATITUDE_SUMMER.csv';
-allAbsorbersPath = '/home/dj104/Retrieval/Parameter_experiments/gases/downwelling_absorbers_1-29_molData.mat';
+allAbsorbersPath = 'downwelling_absorbers_1-29_molData.mat';
 %initialContamPath = '/home/dj104/Retrieval/Parameter_experiments/gases/alt_8km_downwelling_molData.mat';
-initialContamPath = '/home/dj104/Retrieval/Parameter_experiments/gases/all_downwelling_contamination_molData.mat';
+initialContamPath = 'all_downwelling_contamination_molData.mat';
 %initialContamPath = '/home/dj104/Retrieval/Parameter_experiments/gases/allContaminant_molData.mat';
+%setenv('LBL_HOME','/home/dj104/lblrtm/LBL_HOME');
 setenv('LBL_HOME','/home/dj104/lblrtm/LBL_HOME');
 
 

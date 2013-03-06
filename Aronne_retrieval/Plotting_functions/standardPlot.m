@@ -1,6 +1,5 @@
 function [ h, plHandles ] = standardPlot( xdata,ydata,legStrings, plotCommand ,xaxLabel,yaxLabel,xlims,ylims,lineStyles, colorSpecs)
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+%Creates scatter plots of 
 h=figure;
 
 

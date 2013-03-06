@@ -17,7 +17,7 @@ allMols = lower(molecules());
 allMols{end+1} = 'molx';
 allMols{end+1} = 'moln';
 
-extraArgs = varargin{:};
+extraArgs = varargin;
 
 units = containers.Map;
 paramNames = containers.Map;

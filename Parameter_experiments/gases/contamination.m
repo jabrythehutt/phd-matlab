@@ -2,10 +2,10 @@ molsToTest = false(1,29);
 molsToTest(1)=true;
 allMols = true(1,29);
 
-%prof = load('profile.mat');
-%prof=prof.profile;
-%zlevels = [linspace(0.8,15.0,10),linspace(17.0,60.0,10)]';
-%pL = prof.alt;
+prof = load('profile.mat');
+prof=prof.profile;
+zlevels = [linspace(0.8,15.0,10),linspace(17.0,60.0,10)]';
+pL = prof.alt;
 profile.alt = zlevels;
 profile.tdry = interp1(pL,prof.tdry,zlevels);
 profile.pres = interp1(pL,prof.pres,zlevels);

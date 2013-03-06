@@ -38,7 +38,7 @@
 % a constant lapse rate; and exponentially decaying for
 % pressure. This is unphysical, but not so severely that LBLRTM
 % will stop.
-setenv('LBL_HOME','/home/dj104/lblrtm/LBL_HOME');
+setenv('LBL_HOME','/Users/djabry/lblrtm/LBL_HOME');
 opengl neverselect;
 
 
