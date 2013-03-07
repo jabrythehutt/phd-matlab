@@ -1,0 +1,85 @@
+*************************************************************************
+MATLAB CDI functions
+
+The 5 MEX-functions allow the access to NetCDf and GRIB files in MATLAB(R) through the CDI library.
+
+Developped by The MathWorks for the SMHI.
+Point of contact: klaus.wyser-at-smhi.se
+
+MATLAB(R) is a registered trademark of The MathWorks, Inc.  
+Please see www.mathworks.com/trademarks for a list of other trademarks owned by The MathWorks, Inc.  
+Other product or brand names are trademarks or registered trademarks of their respective owners.
+
+$Revision: 1.2 $WCREV$ $  $Date: 2008/09/26 07:41:21 $WCDATE$ $
+*************************************************************************
+
+
+Content
+-------
+
+cdi_mx.c 		: collection of function for the project MEX files        
+cdi_mx.h        	: header file of cdi_mx
+cdi_read1var.c  	: MEX file that reads all data for ONE variable
+cdi_readall.c   	: MEX file that reads all variables
+cdi_readall.m   	: HELP file of cdi_readall
+cdi_readfield.m 	: HELP file of cdi_readfield
+cdi_readfull.m  	: HELP file of cdi_readfull
+cdi_readmeta.m  	: HELP file of cdi_readmeta
+cdi_varlist.c   	: MEX file that lists all the variables
+cdi_varlist.m  	: HELP file of cdi_varlist
+compile.m   	: compiles and creates 5 MEX files
+/include/ 		: CDI library header files (NEEDED FOR COMPILATION)
+/lib32/ 		: CDI library for LINUX 32 (copy your own compiled CDI library here)(NEEDED FOR COMPILATION)
+/lib64/ 		: CDI library for LINUX 64 (copy your own compiled CDI library here)(NEEDED FOR COMPILATION)
+README      	: this file
+test_harness.m  	: test file
+test_readfield.m	: test file
+test_varlist.m  	: test file
+testmovie.m     	: used by test files
+
+test*.m are test files. They are not necessary for the use of the MEX files.
+The libraries provided in /lib32/ and /lib64/ are not products of The MathWorks. They have to be replaced by your own NetCDF and CDI libraries.
+
+How to compile
+---------------------
+
+1/ copy your own compiled CDI and NetCDF libraries in the lib32 or lib64 directory if needed or edit the file compile.m and change the compilation line.
+These files names should be libcdi.a and libnetcdf.a.
+2/ run compile.m in the MATLAB(R) prompt.
+It should produce 5 MEX files: cdi_varlist.mex*, cdi_readmeta.mex*, cdi_readfield.mex*, cdi_readall.mex*, cdi_readfull.mex*.
+
+OPTIONS:
+In the MEX compilation line,
+add the -DDOUBLE flag to return double value for field data returned by cdi_readall, cdi_readfield, cdi_readfull.
+By default, they return single value for the data field.
+add the -DDEBUG flag to display debug info
+
+How to install
+-------------------
+After the compilation, only the *.mex* files are necessary to access GRIB/NetCDF files.
+Only cdi_varlist.mex*, cdi_readmeta.mex*, cdi_readfield.mex*, cdi_readall.mex*, cdi_readfull.mex* are mandatory for the execution.
+
+cdi_varlist.m, cdi_readmeta.m, cdi_readfield.m, cdi_readall.m, cdi_readfull.m are HELP files.
+Typing "help cdi_varlist" in the MATLAB(R) prompt returns the help of this function.
+
+You can compile the MEX files in a directory and add this directory in the MATLAB(R) path so that the CDI functions become global.
+
+Notes
+---------
+
+1/ cdi_read1var.c can generate 3 different MEX files thanks to preprocessor definition.
+These preprocessor definitions allow to use the very same source code for different MEX files, thus avoid redundant code and ease its maintenance.
+
+2/ The 64 bits CDI and NetCDF libraries have been compiled with the shared library option to get rid of an error during MEX compilation.
+for CDI:
+./configure CFLAGS=-fPIC CPPFLAGS=-fPIC  --with-netcdf=/mathworks/home/cpouillo/work/netcdf64
+make
+for NETCDF::
+./configure CFLAGS=-fPIC CPPFLAGS=-fPIC --enable-shared
+make
+
+The need of this option can depend of the system.
+
+The 5 functions have been compiled and successfully tested with MATLAB(R) 2007a on the following system:
+LINUX 32: Red Hat 3.4.6-3 on i386
+LINUX 64: Debian 4.1.1-21 on amd64 (CDI and NetCDF libraries compiled with shared option)

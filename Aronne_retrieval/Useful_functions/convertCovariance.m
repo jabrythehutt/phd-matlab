@@ -6,6 +6,8 @@ function [ cb ] = convertCovariance( c,vec,fn )
 
 %1: Find mean vector from diagonal elements
 
+vec = reshape(vec,[length(vec),1]);
+
 mu = vec-sqrt(diag(c));
 cb = zeros(size(c));
 

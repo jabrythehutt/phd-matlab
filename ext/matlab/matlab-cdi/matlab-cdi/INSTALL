@@ -1,0 +1,188 @@
+GENERAL
+=======
+MATLAB-CDI is a collection of MATLAB functions that import/read GRIB
+and netCDF files through high-level function calls that follows an unified
+syntax. The package supports a subset of the full GRIB and netCDF format
+specification typically produced by climate models.
+
+Technically speaking, MATLAB-CDI consists of mex-interfaces to the CDI
+library that read GRIB/netCDF. CDI is the basic library underlying the
+famous CDO (Climate Data Operators) developed by Max-Planck Institut
+für Meteorologie in Hamburg. The MATLAB-CDI interface package has been
+developed by The MathWorks Consulting on behalf of the Rossby Centre, SMHI.  
+
+MATLAB-CDI has been compiled and tested under Linux and Windows. The
+Linux installation is straightforward, while there are pre-compiled mexwin
+files available for Windows. If this doesn't work, you may consider
+installing the package yourself. However, the Windows installation from
+scratch requires experience of how to compile and install programs in a
+Linux-like environment such as cygwin or MinGW. (Actually, it's not
+the MATLAB-CDI package that causes the problems, it's the netCDF and
+CDI libraries that need to be compiled under Windows, nothing for the
+faint-of-heart.)
+
+
+
+
+
+FUNCTIONS
+=========
+CDI_VARLIST: Returns the list of variables in a netCDF or GRIB file
+CDI_READFIELD: Reads a variable from a file
+CDI_READMETA: Reads all metadata for a variable in a file and return
+   the result in a structure
+CDI_READFULL: Reads a single variable and all its metadata from a file,
+   the results is a structure
+CDI_READALL: Reads all variables and all their metadata from a file,
+   the result is a structure array
+CDI_DATES: translates the date from CDI native format to true date
+
+All functions have on-line help sections that explain their usage,
+simply type 
+
+    help <function> 
+
+from within Matlab.
+
+
+A note on nametables
+--------------------
+While netCDF files provide self-contained descriptions of the data in
+the file (including type of variable, units, and more), GRIB files
+rely on externally defined tables (cf. GRIB 1 documentation in WMO
+Manual on codes, FM-92). In the MATLAB-CDI package these external
+tables are implemented as nametable files. Such files are only used
+for importing GRIB files, as they translate a GRIB description triplet
+(CODE,TYPE,LEVEL) to a variable name, together with appropriate units
+and a description (long_name). An example of a nametable file for
+selected ERA-40 variables is included in the package (filename
+nametable_era40.txt). The use of nametables is optional, an empty
+string can be given instead.
+
+
+KNOWN BUGS
+==========
+Your Matlab session may crash under rare circumstances when using any
+of the functions in this package. This happens if your netCDF or GRIB
+files does not adhere to the standards, e.g. contains additional
+dimensions or grid orientations that are not supported by CDI. 
+
+
+EXAMPLES
+========
+Included with this distribution are a GRIB and a netCDF file with a
+selection of monthly means for May 2002 from the ERA-40 archive. The
+nametable_era40.txt can be used together with the GRIB file to
+translate GRIB parameters to human-readable variable names.
+
+
+
+INSTALLATION
+============
+Pre-requisites
+--------------
+Check if you have the netCDF and CDI libraries on your system (usually
+these are called libnetcdf.a and libcdi.a). If not, you need to
+install these libraries before continuing.
+
+netCDF: available from http://www.unidata.ucar.edu/software/netcdf
+        (matlab-cdi has been tested only with netcdf 3.x, netcdf 4.0
+        may or may not work)
+
+CDI:    available from http://www.mpimet.mpg.de/cdi
+
+Install netCDF before installing CDI. If you are on a Linux-like
+system, you simply follow the installation instructions in the
+packages. Windows users can read below for hints how to install these
+packages.
+
+Compilation
+-----------
+Copy libnetcdf.a and libcdi.a to a directory { lib32 | lib64 |
+lib-mingw } depending on your architecture, see compile.m for details.
+
+Start Matlab while in matlab-cdi and run compile. If everything goes
+well you will now have mex-files and can start using the functions in
+the package. You may want to add the matlab-cdi directory to your
+Matlab path.
+
+
+A few notes on compilation
+--------------------------
+
+Linux32:
+        netCDF and CDI can be installed right off-the shelf,
+        matlab-cdi should not make much of a headache either
+
+Linux64:
+        netCDF and CDI need to be compiled with option -fPIC. If you
+        forget it, or if you have a pre-installed netCDF nad CDI on
+        your system, You may receive a warning during compilation
+        (depending on your compiler) or it may fail during runtime.
+        Re-compile netCDF and CDI with -fPIC before running compile.
+
+Windows PC:
+        You can check if the included *.mexw32 files work. If yes,
+        great, you are done. If not, you face some tough work. First
+        you need to install a Linux-like environment such as MinGW or
+        cygwin:
+
+        Cygwin: available from http://www.cygwin.com
+        MinGW: available from http://www.mingw.org
+
+        Follow the installation instructions for the package that you
+        have selected.  (Cygwin users: make sure you install the devel
+        package.) Once completed, you can continue with the
+        installation of netCDF and CDI.
+
+        Cygwin:
+                Assume you would like to install the lib directory in
+                /cygdrive/d/matlab-cdi-win32. Change accordingly if
+                you prefer a different location.
+
+                Configuring netCDF:
+
+./configure CC=gcc CFLAGS=-mno-cygwin --disable-utilities
+--disable-f77 --disable-f90 --disable-cxx --disable-examples
+--prefix=/cygdrive/d/matlab-cdi-win32
+
+                Configuring CDI:
+
+./configure CC=gcc CFLAGS=-mno-cygwin CPPFLAGS=-I/usr/include
+LDFLAGS=-L/usr/lib --with-netcdf=/cygdrive/d/matlab-cdi-win32
+--prefix=/cygdrive/d/matlab-cdi-win32
+
+        MinGW:
+                Assume you would like to install the lib directory in
+                /cygdrive/d/matlab-cdi-win32/mingw2. Change
+                accordingly if you prefer a different location.
+
+                Configuring netCDF:
+./configure --disable-utilities --disable-f77 --disable-f90
+--disable-cxx --disable-examples
+--prefix=/cygdrive/d/matlab-cdi-win32/mingw2
+
+                Configuring CDI:
+./configure --prefix=/cygdrive/d/matlab-cdi-win32/mingw2
+--with-netcdf=/cygdrive/d/matlab-cdi-win32/mingw2
+
+
+        Cygwin and MinGW installation:
+
+        If all went well with the installation of netCDF and CDI you
+        will find libnetcdf.a and libcdi.a in the lib directory that
+        you have specified with the --prefix option. Copy libnetcdf.a
+        and libcdi.a to lib-mingw in the matlab-cdi directory, and
+        change their suffix from .a to .lib
+
+        Finally all that is left is to get an appropriate mexopts.bat
+        that tells Matlab how to compile c-programs with gcc. You can
+        create such a mexopts.bat yourself (recommended) with GNUMEX
+        (available from https://sourceforge.net/projects/gnumex and
+        then follow the instructions in
+        http://gnumex.sourceforge.net/#matlab_steps) or you modify one
+        of the the sample gnumex that is enclosed. Copy your
+        mexopts.bat to lib-mingw 
+
+        Keep your fingers crossed, start Matlab and run compile.
+
