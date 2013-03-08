@@ -27,8 +27,8 @@ levLst = generateLevList();
 
 server = DataServer();
 request = JSONObject();
-target = [generateFileName(lims,hres),'.grib'];
-convertedTarget = [generateFileName(lims,hres),'.nc'];
+target = [pwd,filesep,generateFileName(lims,hres),'.grib'];
+convertedTarget = [pwd,filesep,generateFileName(lims,hres),'.nc'];
 
 
 request.put('dataset'   , 'interim');
@@ -80,29 +80,32 @@ args(2) =java.lang.String(convertedTarget);
 ucar.grib.Grib2Netcdf.main(args);
 
 
-fPath = [pwd,convertedTarget];
+fPath = convertedTarget;
 
 
     function fPref = generateFileName(lims,hres)
-        fPref ='';
+        fPref =['downloads',filesep];
         dta = [lims;hres];
         for i = 1:size(dta,1)
             
             for j = 1:2
                 
-                fPref = [fPref,dta(i,j)];
+                fPref = [fPref,num2str(dta(i,j))];
                 
-                if j==1
-                    fPref = [fPref,'-'];
-                else
+                if i<size(dta,1)
+                    if j==1
+                        fPref = [fPref,'-'];
+                    else
+                        
+                        fPref = [fPref,'_'];
+                    end
                     
-                    fPref = [fPred,'_'];
                 end
                 
             end
             
         end
-
+        
         
     end
 
@@ -110,7 +113,7 @@ fPath = [pwd,convertedTarget];
     function dateString = generateDateString(lims)
         
         formatOut = 'yyyy-mm-dd';
-        dateString = [datestr(lims(4,1),formatOut),'/to/',datestr(lims(4,2),formatOut)]; 
+        dateString = [datestr(lims(4,1),formatOut),'/to/',datestr(lims(4,2),formatOut)];
         
         
     end
@@ -143,7 +146,7 @@ fPath = [pwd,convertedTarget];
             levVal = levLst(i);
             
             if(levVal>=min(levLims) && levVal<=max(levLims))
-
+                
                 startChar = '/';
                 
                 if strcmp(levString,'')

@@ -1,6 +1,16 @@
-function [ prof ] = downloadProfile( lims )
-%DOWNLOADPROFILE Summary of this function goes here
-%   Detailed explanation goes here
+function [ prof,cov_prof,unit_map ] = downloadMeanProfile( lims,hres )
+
+%Variable map 
+vMap =  containers.Map;
+vMap('Relative_humidity') = 'h2o';
+vMap('Temperature')='tdry';
+vMap('Ozone') = 'o3';
+
+
+%First download 
+f =  downloadProfileData(lims,hres);
+
+
 
 
 end

@@ -1,9 +1,16 @@
-function [ prof,error_prof,min_prof,max_prof,uMap,cov_prof ] = extractMeanProfile( dataDir,dimx,lims,vMap )
+function [ prof,cov_prof,uMap ,min_prof,max_prof] = extractMeanProfile( dataDir,dimx,lims,pressScale,vMap )
 %Constructs a profile structure for all the data specified in data dir
 
 %Set default dimensions to use to levels
 if ~exist('dimx','var')
     dimx = 3;
+    
+end
+
+%Default pressure scale to interpolate data onto
+if ~exist('pressScale','var')
+    %Use ERA-Interim pressure scale
+    pressScale = generateLevList();
     
 end
 
@@ -16,25 +23,25 @@ end
 if ~exist('varMap','var')
     %Mapping of variable names
     vMap = containers.Map();
-    vMap('HNO3')='HNO3';
-    vMap('H2O2')= 'H2O2';
-    vMap('CO')='CO';
-    vMap('CH4')='CH4';
+    vMap('HNO3')='hno3';
+    vMap('H2O2')= 'h2o2';
+    vMap('CO')='co';
+    vMap('CH4')='ch4';
     %vMap('HCL')='HCL';
     %vMap('HOCL')='HOCL';
     %vMap('CLONO2')= 'CLONO2';
-    vMap('HBr')= 'HBR';
-    vMap('HOBr')='HOBR';
-    vMap('N2O')='N2O';
+    vMap('HBr')= 'hbr';
+    vMap('HOBr')='hobr';
+    vMap('N2O')='n2o';
     %vMap('CFC')='CFC';
-    vMap('Water') = 'H2O';
-    vMap('SO2')='SO2';
-    vMap('SO4')='SO4';
-    vMap('NH3')='NH3';
-    vMap('OH_vmr')='OH';
-    vMap('HO2_con')='HO2';
-    vMap('NO_vmr')='NO';
-    vMap('NO2_vmr')='NO2';
+    vMap('Water') = 'h2o';
+    vMap('SO2')='so2';
+    vMap('SO4')='so4';
+    vMap('NH3')='nh3';
+    vMap('OH_vmr')='oh';
+    vMap('HO2_con')='ho2';
+    vMap('NO_vmr')='no';
+    vMap('NO2_vmr')='no2';
     
 end
 
@@ -63,24 +70,31 @@ convMap('molecules/cm3')=1;
 
 allVars = keys(vMap);
 prof = [];
-error_prof=[];
+%error_prof=[];
 cov_prof = [];
 min_prof=[];
 max_prof =[];
+
+prof.pres =pressScale;
+%error_prof.pres = pressScale;
+cov_prof.pres = pressScale;
+min_prof.pres = pressScale ;
+max_prof.pres = pressScale;
+
+
 uMap = containers.Map();
 
 
-
-
 for i=1:length(allVars)
-    
+   
     v = allVars{i};
+    disp(['Extracting data for ',v,'...']);
     updateProfileWithVariable(v);
-    
+    uMap('pres')='A';
 end
 
     function updateProfileWithVariable(v)
-        [covar,meanval,mn,mx]=calculateCovariance(dataDir,v,dimx,lims);
+        [covar,meanval,mn,mx]=calculateCovariance(dataDir,v,dimx,lims,pressScale);
         stdev = sqrt(diag(covar));
         %Use the mean for the profile, stdev for the error_profile and
         %mn and mx for the min and max profiles resp.
@@ -90,10 +104,11 @@ end
         
         fldName = vMap(v);
         [profVec,lblunit]= convertUnits(meanval,unitString);
+        
         prof= setfield(prof,fldName,profVec);
         min_prof = setfield(min_prof,fldName,convertUnits(mn,unitString));
         max_prof = setfield(max_prof,fldName,convertUnits(mx,unitString));
-        error_prof = setfield(error_prof,fldName,convertUnits(stdev,unitString));
+       % error_prof = setfield(error_prof,fldName,convertUnits(stdev,unitString));
         cov_prof = setfield(cov_prof,fldName,convertCov(covar,meanval,unitString));
         
         uMap(fldName)=lblunit;
@@ -143,9 +158,39 @@ end
     function [concVec,lblunit] = convertUnits(vec1,unitString)
         
             [convFac, lblunit] = findConversionFactor(unitString);
+             vec1 = reshape(vec1,[numel(vec1),1]);
 
             concVec = vec1*convFac;
+            %Make into a column vector
+            
 
+        
+    end
+
+function levLst = generateLevList()
+        
+        levLst = zeros(37,1);
+        
+        ix = 1;
+        
+        for x = 1000:-25:750
+            levLst(ix)=x;
+            ix = ix+1;
+            
+        end
+        
+        for x = 700:-50:250
+            levLst(ix)=x;
+            ix= ix+1;
+        end
+        
+        for x = 225:-25:100
+            levLst(ix)=x;
+            ix = ix+1;
+        end
+        
+        levLst(ix:end)=[70 50 30 20 10 7 5 3 2 1];
+        
         
     end
 

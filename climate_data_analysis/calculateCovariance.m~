@@ -143,10 +143,9 @@ end
         %Reshape array to have every observation vector as a row in a 2d
         %array
         
-        %First permute dimensions of array so that required dim is last
-        arr = permute(arr,[notDims,dimx]);
-        pressGrid = permute(pressGrid,[notDims,dimx]);
-
+        
+        
+        
         numRows = size(arr,notDims(1))*size(arr,notDims(2));
         arr = reshape(arr,numRows,size(arr,dimx));
         pressGrid = reshape(pressGrid,numRows,size(pressGrid,dimx));
