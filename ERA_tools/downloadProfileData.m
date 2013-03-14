@@ -12,9 +12,21 @@ if ~exist('hres','var')||isempty(hres)
     
 end
 
-javaaddpath('../ext/java/JSON.jar');
-javaaddpath('../ext/java/ECMWF-API.jar');
-javaaddpath('../ext/java/netcdfAll-4.3.jar');
+mfle = mfilename('fullpath');
+mname = mfilename();
+currDir = mfle(1:end-length(mname)-1);
+downloadDir = [currDir,filesep,'downloads'];
+topDir = currDir(1:end-10);
+extJavaDir = [topDir,filesep,'ext',filesep,'java'];
+
+
+addpath(extJavaDir);
+addpath([topDir,filesep,'ERA_tools']);
+addpath([topDir,filesep,'Aronne_retrieval']);
+addpath([topDir,filesep,'climate_data_analysis']);
+javaaddpath([extJavaDir,filesep,'JSON.jar']);
+javaaddpath([extJavaDir,filesep,'ECMWF-API.jar']);
+javaaddpath([extJavaDir,filesep,'netcdfAll-4.3.jar']);
 
 
 import org.ecmwf.*;
@@ -27,8 +39,8 @@ levLst = generateLevList();
 
 server = DataServer();
 request = JSONObject();
-target = [pwd,filesep,generateFileName(lims,hres),'.grib'];
-convertedTarget = [pwd,filesep,generateFileName(lims,hres),'.nc'];
+target = [generateFileName(lims,hres),'.grib'];
+convertedTarget = [generateFileName(lims,hres),'.nc'];
 
 
 request.put('dataset'   , 'interim');
@@ -40,8 +52,12 @@ disp(['Requested level list = ',levListString]);
 
 request.put('levtype','pl');
 
-%Include temperature, RH and ozone
-request.put('param','130.128/157.128/203.128');
+%Include temperature, RH, ozone and geopotential
+%request.put('param','130.128/157.128/203.128/129.128');
+
+%Change request to pull down specific humidity to avoid 100+% values
+request.put('param','130.128/133.128/203.128/129.128');
+
 request.put('step','0');
 
 
@@ -84,7 +100,7 @@ fPath = convertedTarget;
 
 
     function fPref = generateFileName(lims,hres)
-        fPref =['downloads',filesep];
+        fPref =[downloadDir,filesep];
         dta = [lims;hres];
         for i = 1:size(dta,1)
             

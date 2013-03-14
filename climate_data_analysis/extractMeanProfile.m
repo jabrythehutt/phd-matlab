@@ -85,13 +85,34 @@ max_prof.pres = pressScale;
 uMap = containers.Map();
 
 
-for i=1:length(allVars)
-   
-    v = allVars{i};
-    disp(['Extracting data for ',v,'...']);
-    updateProfileWithVariable(v);
-    uMap('pres')='A';
+outputFile = [dataDir,filesep,generateUniqueQueryName(dimx,lims,pressScale,vMap)];
+%If this query has been run before than just load the results from the file
+if exist(outputFile,'file')
+    
+    result = load(outputFile);
+    prof= result.prof;
+    cov_prof=result.cov_prof;
+    uMap = result.uMap;
+    min_prof = result.min_prof;
+    max_prof=result.max_prof;
+    
+    
+else
+    
+    
+    for i=1:length(allVars)
+        
+        v = allVars{i};
+        disp(['Extracting data for ',v,'...']);
+        updateProfileWithVariable(v);
+        uMap('pres')='A';
+    end
+    
+    save(outputFile,'prof','cov_prof','uMap','min_prof','max_prof');
+    
 end
+
+
 
     function updateProfileWithVariable(v)
         [covar,meanval,mn,mx]=calculateCovariance(dataDir,v,dimx,lims,pressScale);
@@ -108,7 +129,7 @@ end
         prof= setfield(prof,fldName,profVec);
         min_prof = setfield(min_prof,fldName,convertUnits(mn,unitString));
         max_prof = setfield(max_prof,fldName,convertUnits(mx,unitString));
-       % error_prof = setfield(error_prof,fldName,convertUnits(stdev,unitString));
+        % error_prof = setfield(error_prof,fldName,convertUnits(stdev,unitString));
         cov_prof = setfield(cov_prof,fldName,convertCov(covar,meanval,unitString));
         
         uMap(fldName)=lblunit;
@@ -117,9 +138,9 @@ end
 
     function [conCov, lblunit] = convertCov(cov1,meanVec,unitString)
         
-       [convFac, lblunit] = findConversionFactor(unitString);
-       convFun = @(x,y)x*convFac;
-       conCov = convertCovariance(cov1,meanVec,convFun);
+        [convFac, lblunit] = findConversionFactor(unitString);
+        convFun = @(x,y)x*convFac;
+        conCov = convertCovariance(cov1,meanVec,convFun);
         
     end
 
@@ -150,24 +171,37 @@ end
         convVal1 = str2double(convVal1Str);
         convVal2 = convMap(foundUnit);
         convFac = convVal1*convVal2;
-            
+        
         lblunit = unitMap(foundUnit);
     end
 
 
     function [concVec,lblunit] = convertUnits(vec1,unitString)
         
-            [convFac, lblunit] = findConversionFactor(unitString);
-             vec1 = reshape(vec1,[numel(vec1),1]);
-
-            concVec = vec1*convFac;
-            %Make into a column vector
-            
-
+        [convFac, lblunit] = findConversionFactor(unitString);
+        vec1 = reshape(vec1,[numel(vec1),1]);
+        
+        concVec = vec1*convFac;
+        %Make into a column vector
+        
+        
         
     end
 
-function levLst = generateLevList()
+    function val = generateUniqueValueForLevList(levList)
+        
+        val = sum(generateUniqueValueForLevel(levList));
+        
+        
+    end
+
+    function val = generateUniqueValueForLevel(lev)
+        
+        val = 1.0003*lev;
+        
+    end
+
+    function levLst = generateLevList()
         
         levLst = zeros(37,1);
         
@@ -190,6 +224,41 @@ function levLst = generateLevList()
         end
         
         levLst(ix:end)=[70 50 30 20 10 7 5 3 2 1];
+        
+        
+    end
+
+    function fileName = generateUniqueQueryName(dimx,lims,pressScale,vMap)
+        
+        fileName = [num2str(dimx),'_'];
+        
+        %Append the sum of the pressure levels rather than each individual
+        %one. This may not always give a unique value
+        fileName = [fileName,num2str(generateUniqueValueForLevList(pressScale)),'_'];
+        
+        for ix = 1:size(lims,1)
+            for jx = 1:2
+                
+                fileName = [fileName,num2str(lims(ix,jx))];
+                
+                if jx==1
+                    
+                    fileName = [fileName,'-'];
+                else
+                    
+                    if ix < size(lims,1)
+                        
+                        fileName = [fileName,'_'];
+                        
+                    end
+                    
+                end
+                
+            end
+        end
+        
+        fileName = [fileName,'.mat'];
+        
         
         
     end

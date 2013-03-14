@@ -7,30 +7,25 @@ end
 
 %Variable map
 vMap =  containers.Map();
-vMap('Relative_humidity') = 'h2o';
+vMap('Specific_humidity') = 'h2o';
 vMap('Temperature')='tdry';
 vMap('Ozone_mass_mixing_ratio') = 'o3';
 vMap('isobaric') = 'pres';
 
-% uMap = containers.Map();
-% uMap('Relative_humidity') = 'H';
-% uMap('Temperature') = 'A';
-% uMap('Ozone_mass_mixing_ratio') = 'C';
-
 unit_map = containers.Map();
-unit_map('h2o') = 'H';
+unit_map('h2o') = 'C';
 unit_map('tdry') = 'A';
 unit_map('o3') = 'C';
 unit_map('pres') = 'A';
 
 convMap = containers.Map();
 %No conversion required for these variables
-convMap('Relative_humidity')=1.0;
+convMap('Specific_humidity')=1000.0;
 convMap('Temperature')=1.0;
 convMap('isobaric') = 1.0;
 
 %Convert from kg/kg to g/kg
-convMap('Ozone_mass_mixing_ratio')=1000;
+convMap('Ozone_mass_mixing_ratio')=1000.0;
 
 
 prof = [];

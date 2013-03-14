@@ -11,7 +11,7 @@ if ~exist('lims','var')
     
 end
 
-lims2 = [-5.0,0.0;48.0,55.0;0,1000;0,now];
+lims2 = [-5.0,0.0;48.0,55.0;0,1000;0,lims(end)];
 
 %Download ERA-I profiles for all points in space-time within lims
 [prof1,cov_prof1,unit_map1]=downloadMeanProfile(lims);
