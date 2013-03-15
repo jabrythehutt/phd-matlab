@@ -186,10 +186,14 @@ while ~convergence_met && (iter <= max_iteration_count)
     xhatiter = xhat{iter};
     xhatiter = xhatiter(state_mask);
     
-    inv_hatS = kiter' * inv_Se * kiter + inv_Sa;
-    hatS = inv(inv_hatS);
-    G{iter} = hatS * kiter' * inv_Se;
+    inv_hatS = kiter' * Se \ kiter + inv_Sa;
+    G{iter} = inv_hatS \ kiter' / Se;
     A{iter} = G{iter} * kiter;
+    
+%     inv_hatS = kiter' * inv_Se * kiter + inv_Sa;
+%     hatS = inv(inv_hatS);
+%     G{iter} = hatS * kiter' * inv_Se;
+%     A{iter} = G{iter} * kiter;
 
     ylocal = y - fxhatiter + kiter*(xhatiter - xa);
     

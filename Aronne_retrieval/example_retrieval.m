@@ -25,7 +25,7 @@ profile.ch4 = sample_data(1:nlevels,9);
 % construct state vector - this will be T & Q only
 prior.alt = sample_data(1:nlevels,1);
 prior.tdry = sample_data(1:nlevels,2);
-prior.pressure = sample_data(1:nlevels,3);
+prior.pres = sample_data(1:nlevels,3);
 prior.h2o = log(sample_data(1:nlevels,4));
 prior.co2 = log(sample_data(1:nlevels,5));
 prior.o3 = log(sample_data(1:nlevels,6));

@@ -32,10 +32,15 @@ fNames = fieldnames(prof1);
 for i =1:length(fNames)
    
     f = fNames{i};
-    prof = setfield(prof,f,getfield(prof1,f));
-    cov_prof = setfield(cov_prof,f,getfield(cov_prof1,f));
+    prof.(f)= prof1.(f);
+    cov_prof.(f) = cov_prof1.(f);
 
 end
+
+
+%Need to change this to get a more accurate value of CO2;
+prof.co2 = ones(size(prof.tdry))*390.0;
+
 
 
 ukeys = keys(unit_map1);

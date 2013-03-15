@@ -1,5 +1,8 @@
 function [Knew,ynew,lblrtm_success] = ...
     lblrtm_update_K(xhat, prior, wavenum, FTSparams, cleanup_work_dir)
+
+
+
 %function [Knew,ynew,lblrtm_success] = ...
 %   lblrtm_update_K(xhat, prior, wavenum, FTSparams, cleanup_work_dir)
 %
@@ -35,10 +38,12 @@ end
 
 nstatevar = length(xhat);
 prof.alt = prior.alt;
-prof.pres = prior.pressure;
+%prof.pres = prior.pressure;
+prof.pres = prior.pres;
 prof.tdry = xhat(1:nstatevar/2);
 prof.h2o = exp(xhat(nstatevar/2+1:end));
-mol_names = [{'co2'}, {'o3'}, {'n2o'}, {'co'}, {'ch4'}];
+%mol_names = [{'co2'}, {'o3'}, {'n2o'}, {'co'}, {'ch4'}];
+mol_names = lower(molecules(2:39));
 for m=1:length(mol_names);
     
     if isfield(prof,mol_names{m})
