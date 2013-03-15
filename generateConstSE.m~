@@ -1,0 +1,11 @@
+function [se ] = generateConstSE( wn,bT,varT )
+%Generate instrument covariance based on a blackbody 
+
+r1 = tToR(t1,1.0e2*wn)/1.0e2;
+
+
+
+
+
+end
+
