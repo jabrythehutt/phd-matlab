@@ -1,6 +1,6 @@
 
 %Create a truth profile based on tropical 
-
+setenv('LBL_HOME','/home/dj104/lblrtm/LBL_HOME');
 mols = lower(molecules());
 alt = (0:60)';
 standardAtm = 1;
