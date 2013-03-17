@@ -20,7 +20,7 @@ for i = 1:length(allVars)
         ivec = interp1(xvec(:),vec(:),grid(:),'linear','extrap')';
         
         ivec(ivec<0.0)=0.0;
-        profile.(v)=ivec;
+        profile.(v)=ivec';
        
         
     end

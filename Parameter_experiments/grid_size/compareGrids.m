@@ -41,17 +41,19 @@ for i =1:n
     
     [ prof,cov_prof] = constructMeanProfile(lims);
     
+    %Assign the same altitude grid to the mean profile as the one used in
+    %the truthProfile
+    prof.alt = truthProf.alt;
+    
     sa = blkdiag(cov_prof.tdry, cov_prof.h2o);
-    channel_mask = true(size(y));
-    state_mask = true(size(prof.pres));
+    
     aJParams = [0,1];
     
      %Then perform the retrievals with the starting 'mean' profiles,
     %measurement vector and retrieval arguments
     
     [xhat_final, convergence_met, iter, xhat, G, A, K, hatS,Fxhat,final_prof] = ...
-        simple_nonlinear_retrieval2(prof,sa,y, se, ...
-    wnRange, lblArgs, aJParams,channel_mask, state_mask);
+        simple_nonlinear_retrieval2(prof,sa,y, se, wnRange, lblArgs, aJParams);
 
     
 

@@ -107,6 +107,15 @@ if ~exist('aJParams','var')
     aJParams = [0,1];
 end
 
+if ~exist('state_mask','var')
+    state_mask = true(length(aJParams)*length(prior_prof.tdry),1);
+end
+
+if ~exist('channel_mask','var')
+    
+    channel_mask = true(length(fully),1);
+end
+
 %Generate prior_F from prior
 prior_F= [];
 
@@ -139,7 +148,7 @@ for i =1:length(aJParams)
         xa(ix:ix+delta-1)=prior_prof.tdry;
     elseif p>0
 
-        mol = allMols(p);
+        mol = allMols{p};
         xa(ix:ix+delta-1)=log(prior_prof.(mol));
 
         %Also convert covariance
@@ -199,7 +208,7 @@ while ~convergence_met && (iter <= max_iteration_count)
         fullx=xhat{iter};
         
         [newFullK, newy, lblrtm_success] = ...
-            lblrtm_update_K2(fullx, wnRange,lblArgs, aJParams, cleanup_work_dir);
+            lblrtm_update_K2(fullx, prior_prof,wnRange,lblArgs, aJParams, cleanup_work_dir);
         
         
         
@@ -240,11 +249,11 @@ while ~convergence_met && (iter <= max_iteration_count)
     xhatiter = xhatiter(state_mask);
     
     
-    inv_hatS = kiter' * Se \ kiter + inv_Sa;
-    G{iter} = inv_hatS \ kiter' / Se;
+    inv_hatS = (kiter' * (Se \ kiter)) + inv_Sa;
+    G{iter} = inv_hatS \ (kiter' / Se);
     A{iter} = G{iter} * kiter;
     
-    hatS{iter} = inv(inv_hadS);
+    hatS{iter} = inv(inv_hatS);
     
 %     inv_hatS = kiter' * inv_Se * kiter + inv_Sa;
 %     hatS = inv(inv_hatS);
@@ -297,7 +306,7 @@ delta = length(final_prof.tdry);
 
 for i=1:length(aJParams)
     p = aJParams(i);
-    vec = xhat(ix:ix+delta-1);
+    vec = xhat_final(ix:ix+delta-1);
     
     if p==0
         

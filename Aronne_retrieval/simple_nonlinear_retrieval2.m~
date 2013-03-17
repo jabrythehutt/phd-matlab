@@ -1,4 +1,4 @@
-function [xhat_final, convergence_met, iter, xhat, G, A, K, Fxhat, final_prof] = ...
+function [xhat_final, convergence_met, iter, xhat, G, A, K, hatS, Fxhat, final_prof] = ...
     simple_nonlinear_retrieval2(prior_prof,sa,fully, fullSe, ...
     wnRange, lblArgs, aJParams,channel_mask, state_mask,convergence_limit,max_iteration_count)
 
@@ -107,6 +107,8 @@ if ~exist('aJParams','var')
     aJParams = [0,1];
 end
 
+if 
+
 %Generate prior_F from prior
 prior_F= [];
 
@@ -139,7 +141,7 @@ for i =1:length(aJParams)
         xa(ix:ix+delta-1)=prior_prof.tdry;
     elseif p>0
 
-        mol = allMols(p);
+        mol = allMols{p};
         xa(ix:ix+delta-1)=log(prior_prof.(mol));
 
         %Also convert covariance
@@ -173,6 +175,7 @@ xhat = cell(max_iteration_count+1,1);
 Fxhat = cell(max_iteration_count,1);
 G = cell(max_iteration_count,1);
 A = cell(max_iteration_count,1);
+hatS = cell(max_iteration_count,1);
 
 
 fullx=xa;
@@ -243,6 +246,8 @@ while ~convergence_met && (iter <= max_iteration_count)
     G{iter} = inv_hatS \ kiter' / Se;
     A{iter} = G{iter} * kiter;
     
+    hatS{iter} = inv(inv_hadS);
+    
 %     inv_hatS = kiter' * inv_Se * kiter + inv_Sa;
 %     hatS = inv(inv_hatS);
 %     G{iter} = hatS * kiter' * inv_Se;
@@ -275,6 +280,7 @@ if iter <= max_iteration_count
     G = G(1:iter-1);
     A = A(1:iter-1);
     K = K(1:iter-1);
+    hatS = hatS(1:iter-1);
     xhat = xhat(1:iter);
     Fxhat = Fxhat(1:iter-1);
 end
@@ -285,11 +291,11 @@ xhat_final=xhat{end};
 
 
 %Create an output profile by converting back from log
-finaprof = prior_prof;
+final_prof = prior_prof;
 
 allMols = lower(molecules());
 ix = 1;
-delta = length(prof.tdry);
+delta = length(final_prof.tdry);
 
 for i=1:length(aJParams)
     p = aJParams(i);
@@ -298,13 +304,13 @@ for i=1:length(aJParams)
     if p==0
         
         
-        prof.tdry=vec;
+        final_prof.tdry=vec;
         
     elseif p>0
         
         m = allMols{p};
         
-        prof.(m)=exp(vec);
+        final_prof.(m)=exp(vec);
         
     end
     ix = ix+delta;
