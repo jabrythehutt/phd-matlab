@@ -32,6 +32,11 @@ function [ rslt ] = compareGrids( truthProf,startLims,limsStep,n,se, wnRange,lbl
 rslt=[];
 
 
+allMols = lower(molecules());
+
+%Also test if altitude has been assigned
+allMols{end+1} = 'alt';
+
 %For each set of limits, download the mean profiles and associated
 %covariance matrices.
 
@@ -41,22 +46,42 @@ for i =1:n
     
     [ prof,cov_prof] = constructMeanProfile(lims);
     
-    %Assign the same altitude grid to the mean profile as the one used in
-    %the truthProfile
-    prof.alt = truthProf.alt;
+    %If the downloaded profile does not contain data for all the specified
+    %molecules in the truth profile then use the data from the truth
+    %profile
+    
+    
+    
+    for j = 1:length(allMols)
+        
+        mol = allMols{j};
+        
+        if ~isfield(prof,mol)
+            
+            if isfield(truthProf,mol)
+                
+                prof.(mol)=truthProf.(mol);
+                
+            end
+        end
+        
+    end
+    
+    
+    
     
     sa = blkdiag(cov_prof.tdry, cov_prof.h2o);
     
     aJParams = [0,1];
     
-     %Then perform the retrievals with the starting 'mean' profiles,
+    %Then perform the retrievals with the starting 'mean' profiles,
     %measurement vector and retrieval arguments
     
     [xhat_final, convergence_met, iter, xhat, G, A, K, hatS,Fxhat,final_prof] = ...
         simple_nonlinear_retrieval2(prof,sa,y, se, wnRange, lblArgs, aJParams);
-
     
-
+    
+    
     res = [];
     res.truthProf = truthProf;
     res.priorProf = prof;
@@ -72,7 +97,7 @@ for i =1:n
     res.lblArgs = lblArgs;
     res.wnRange = wnRange;
     
-        
+    
     %Add to results
     if i==1
         
