@@ -9,11 +9,10 @@ truthProf = calculateProfile( standardAtm, alt, mols );
 
 truthProf.co2 = ones(size(truthProf.tdry)*390.0);
 
-truthProf = interpolateProfile(truthProfle,'pres',generateERALevs([0,1100]));
+truthProf = interpolateProfile(truthProf,'pres',generateERALevs([0,1100]));
 
 %Just try one iteration as a test
 n=1;
-
 
 startLims = [-1.5,0.0;-1.5,0.0;0,1000;datenum(2012,12,1),datenum(2012,12,2)];
 limsStep = zeros(size(startLims));
