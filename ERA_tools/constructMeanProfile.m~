@@ -12,9 +12,7 @@ if ~exist('lims','var')
 end
 
 
-if ~exist('dataDir','var')
-    dataDir = '/home/dj104/Climate_data';
-end
+if exist('dataDir','var')
 
 lims2 = [-5.0,0.0;48.0,55.0;0,1000;0,lims(end)];
 
@@ -23,7 +21,7 @@ lims2 = [-5.0,0.0;48.0,55.0;0,1000;0,lims(end)];
 
 
 %Extract profiles from GISS for all points in space-time within lims
-[prof2,cov_prof2,unit_map2]=extractMeanProfile(dataDir,...,
+[prof2,cov_prof2,unit_map2]=extractMeanProfile('/Users/djabry/Documents/PhD/Retrieval/Climate_data',...,
     3,lims2);
 
 
