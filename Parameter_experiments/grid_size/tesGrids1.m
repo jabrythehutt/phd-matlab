@@ -22,8 +22,8 @@ startLims = [-1.5,0.0;-1.5,0.0;0,1000;datenum(2012,12,1),datenum(2012,12,2)];
 limsStep = zeros(size(startLims));
 
 dv = 0.1;
-startWn = 100;
-endWn = 500;
+startWn = 800;
+endWn = 1500;
 
 wnRange = [startWn,endWn];
 
