@@ -1,0 +1,59 @@
+function [priorCovs,finalCovs, h ] = plotCovs( priorProf,sa,finalProf,hatS,aJParams )
+
+if ~exist('aJParams','var')
+    
+    aJParams = [0 1];
+end
+
+
+
+%For now only plot wv;
+
+
+
+
+
+allMols = lower(molecules());
+priorCovs = cell(size(aJParams));
+finalCovs =  cell(size(aJParams));
+
+%Convert covariance into
+
+for i =1:length(aJParams)
+    
+    m = aJParams(i);
+    param = 'tdry';
+    
+    if m==0
+        
+        %Temperature
+
+    elseif m>0
+        
+        %Molecule
+        
+        param = allMols{i};
+    end
+    
+    priorVec = priorProf.(param);
+    finalVec = finalProf.(param);
+    
+    convFn = @(x,y)exp(x);
+    
+   priorCovs{i} = convertCovariance(sa,
+     
+    
+end
+
+
+
+
+convFn  = @(x,y)exp(x);
+
+
+
+
+
+
+end
+
