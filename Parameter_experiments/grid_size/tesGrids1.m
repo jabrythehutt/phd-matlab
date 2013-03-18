@@ -9,7 +9,10 @@ truthProf = calculateProfile( standardAtm, alt, mols);
 
 %Convert to h2o from ppmv to g/kg
 
-truthProf.h2o = truthProf.h2o*(28.966/18.0153)*1.0e-3;
+%truthProf.h2o = truthProf.h2o*(18.0153/28.966)*1.0e-3;
+
+%Fudge factor to make profiles similar
+truthProf.h2o = truthProf.h2o*2.0e-3;
 
 truthProf.co2 = ones(size(truthProf.tdry))*390.0;
 
@@ -23,7 +26,7 @@ limsStep = zeros(size(startLims));
 
 dv = 0.1;
 startWn = 100;
-endWn = 400;
+endWn = 500;
 
 wnRange = [startWn,endWn];
 
@@ -49,7 +52,7 @@ lblArgs{8} = molUnits;
 
 wn_grid = startWn:dv:endWn-dv;
 
-se = generateConstSE(wn_grid,250,0.3);
+se = generateConstSE(wn_grid,250,1.0);
 
 
 fileName = 'test.mat';

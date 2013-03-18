@@ -1,5 +1,5 @@
 function [Knew,ynew,lblrtm_success] = ...
-    lblrtm_update_K2(xhat, prior_prof, wavenum, lblArgs, aJParams, cleanup_work_dir)
+    lblrtm_update_K2(xhat, prior_prof, wavenum, lblArgs, aJParams, defaultAtm,cleanup_work_dir)
 
 
 
@@ -39,6 +39,13 @@ if ~exist('aJParams','var')
     
     %Default to temperature and water vapour
     aJParams = [0,1];
+end
+
+
+if ~exist('defaultAtm','var')
+    
+    defaultAtm = 1;
+    
 end
 
 
@@ -99,10 +106,10 @@ lblArgsWithAJ{end+1} = aJParams;
 %    {'Tbound'}, {[prior.Tsurf, prior.esurf]}];
 
 [wavenum_grid, ynew, tau, lblrtm_success_y] = simple_matlab_lblrun(...
-    cleanup_work_dir, prior.stdatm_flag(1), prof, wavenum, lblArgs{:}); %#ok<ASGLU>
+    cleanup_work_dir, defaultAtm, prof, wavenum, lblArgs{:}); %#ok<ASGLU>
     
 %t5arglist = [t5arglist, {'CalcJacobian'}, {[0 1]}];
 [wavenum_grid, Knew, lblrtm_success_K] = simple_matlab_AJ_lblrun(...
-    cleanup_work_dir, prior.stdatm_flag(1), prof, wavenum,  lblArgsWithAJ{:}); %#ok<ASGLU>
+    cleanup_work_dir, defaultAtm, prof, wavenum,  lblArgsWithAJ{:}); %#ok<ASGLU>
 
 lblrtm_success = lblrtm_success_y && lblrtm_success_K;

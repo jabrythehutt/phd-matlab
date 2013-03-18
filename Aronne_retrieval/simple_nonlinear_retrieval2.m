@@ -1,6 +1,6 @@
 function [xhat_final, convergence_met, iter, xhat, G, A, K, hatS, Fxhat, final_prof] = ...
     simple_nonlinear_retrieval2(prior_prof,sa,fully, fullSe, ...
-    wnRange, lblArgs, aJParams,channel_mask, state_mask,convergence_limit,max_iteration_count)
+    wnRange, lblArgs, aJParams,defaultAtm,channel_mask, state_mask,convergence_limit,max_iteration_count)
 
 %Updated version of simple_nonlinear_retrieval to generate prior_F rather 
 %than take it as an input arg 
@@ -116,6 +116,11 @@ if ~exist('channel_mask','var')
     channel_mask = true(length(fully),1);
 end
 
+if ~exist('defaultAtm','var')
+    
+    defaultAtm = 1;
+end
+
 %Generate prior_F from prior
 prior_F= [];
 
@@ -125,10 +130,10 @@ lblArgsWJ{end+1} = 'CalcJacobian';
 lblArgsWJ{end+1} =  aJParams;
 
 [wn, prior_F.Fxhat] = simple_matlab_lblrun(...
-    cleanup_work_dir, 1, prior_prof, wnRange, lblArgs{:});
+    cleanup_work_dir, defaultAtm, prior_prof, wnRange, lblArgs{:});
 
 [wn, prior_F.K] = simple_matlab_AJ_lblrun(...
-    cleanup_work_dir, 1, prior_prof, wnRange,  lblArgsWJ{:});
+    cleanup_work_dir, defaultAtm, prior_prof, wnRange,  lblArgsWJ{:});
 
 
 %Construct xa and convert molecular concentrations to log values
@@ -208,7 +213,7 @@ while ~convergence_met && (iter <= max_iteration_count)
         fullx=xhat{iter};
         
         [newFullK, newy, lblrtm_success] = ...
-            lblrtm_update_K2(fullx, prior_prof,wnRange,lblArgs, aJParams, cleanup_work_dir);
+            lblrtm_update_K2(fullx, prior_prof,wnRange,lblArgs, aJParams, defaultAtm,cleanup_work_dir);
         
         
         
