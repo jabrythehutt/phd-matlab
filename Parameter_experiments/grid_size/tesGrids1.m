@@ -9,10 +9,7 @@ truthProf = calculateProfile( standardAtm, alt, mols);
 
 %Convert to h2o from ppmv to g/kg
 
-%truthProf.h2o = truthProf.h2o*(18.0153/28.966)*1.0e-3;
-
-%Fudge factor to make profiles similar
-truthProf.h2o = truthProf.h2o*2.0e-3;
+truthProf.h2o = truthProf.h2o*(18.0153/28.966)*1.0e-3;
 
 truthProf.co2 = ones(size(truthProf.tdry))*390.0;
 

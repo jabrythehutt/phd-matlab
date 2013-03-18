@@ -95,7 +95,7 @@ end
 
 if ~exist('max_iteration_count','var')
     
-    max_iteration_count = 10;
+    max_iteration_count = 5;
 end
 
 
