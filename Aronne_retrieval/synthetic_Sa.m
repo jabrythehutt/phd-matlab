@@ -1,4 +1,4 @@
-function Sa = synthetic_Sa(alt, corr_length, diag_var);
+function Sa = synthetic_Sa(alt, corr_length, diag_var)
 
 % slow to compute (boo) but easy to implement (hooray)
 

@@ -95,7 +95,7 @@ end
 
 if ~exist('max_iteration_count','var')
     
-    max_iteration_count = 5;
+    max_iteration_count = 10;
 end
 
 
@@ -260,15 +260,17 @@ while ~convergence_met && (iter <= max_iteration_count)
     
     hatS{iter} = inv(inv_hatS);
     
-%     inv_hatS = kiter' * inv_Se * kiter + inv_Sa;
-%     hatS = inv(inv_hatS);
-%     G{iter} = hatS * kiter' * inv_Se;
-%     A{iter} = G{iter} * kiter;
+    inv_Se = inv(Se);
+     inv_hatS2 = kiter' * inv_Se * kiter + inv_Sa;
+     hatS2 = inv(inv_hatS2);
+     G2 = hatS2 * kiter' * inv_Se;
+     A2 = G2 * kiter;
 
+     
     ylocal = y - fxhatiter + kiter*(xhatiter - xa);
     
      xhatin = G{iter} * ylocal + xa;
-     
+     xhatin2 = G2*ylocal+xa;
      
 
     xhat{iter+1} = xhat{iter};

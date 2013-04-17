@@ -67,10 +67,29 @@ for i =1:n
         
     end
     
+    prof.tdry = truthProf.tdry;
+    perr = 0.1;
+    cl = 0.2;
     
     
+   %sa1 = synthetic_Sa(prof.alt,cl,(prof.tdry*perr).^2);
+   sa1 = synthetic_Sa(prof.alt,cl,ones(size(prof.tdry)));
+   %sa2 = synthetic_Sa(prof.alt,cl,(prof.h2o*perr).^2);
+   sa2 = cov_prof.h2o;
     
-    sa = blkdiag(cov_prof.tdry, cov_prof.h2o);
+    %sa = blkdiag(cov_prof.tdry, cov_prof.h2o);
+    %sa = blkdiag(sa1, cov_prof.h2o);
+  
+    if length(se)==1
+        se = generateSE(y,wn,se);
+        
+    end
+    
+    sa = blkdiag(sa1,sa2);
+    
+%     prof = truthProf;
+%     prof.h2o = truthProf.h2o*0.9;
+%     prof.tdry = truthProf.tdry+3.0;
     
     aJParams = [0,1];
     
