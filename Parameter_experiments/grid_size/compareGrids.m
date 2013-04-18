@@ -122,6 +122,8 @@ for i =1:n
     res.se = se;
     res.lblArgs = lblArgs;
     res.wnRange = wnRange;
+    res.channelMask  =channelMask;
+    res.stateMask = stateMask;
     
     
     %Add to results
