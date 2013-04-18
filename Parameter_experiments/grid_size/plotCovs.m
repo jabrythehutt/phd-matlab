@@ -1,8 +1,13 @@
-function [priorCovs,finalCovs, h ] = plotCovs( priorProf,sa,finalProf,hatS,aJParams )
+function [priorCovs,finalCovs, h ] = plotCovs( priorProf,sa,finalProf,hatS,aJParams,stateMask )
 
 if ~exist('aJParams','var')
     
     aJParams = [0 1];
+end
+
+if ~exist('stateMask','var')
+    
+   stateMask = true(length(aJParams)*length(priorProf.tdry),1);
 end
 
 
@@ -20,6 +25,7 @@ finalCovs =  cell(size(aJParams));
 %Convert covariance into
 
 ix = 1;
+ix2=1;
 delta = length(priorProf.tdry);
 
 for i =1:length(aJParams)
@@ -54,9 +60,11 @@ for i =1:length(aJParams)
     
     
     
-    priorCovs{i} = convertCovariance(priorCov,priorVec,convFn);
+    priorCovs{i} = priorCov ;%convertCovariance(priorCov,priorVec,convFn);
     finalCovs{i} = convertCovariance(finalCov,finalVec,convFn);
     ix = ix+delta;
+    
+    
     
 end
 
