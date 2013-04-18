@@ -74,8 +74,8 @@ for i =1:n
     
    %sa1 = synthetic_Sa(prof.alt,cl,(prof.tdry*perr).^2);
    sa1 = synthetic_Sa(prof.alt,cl,ones(size(prof.tdry)));
-   %sa2 = synthetic_Sa(prof.alt,cl,(prof.h2o*perr).^2);
-   sa2 = cov_prof.h2o;
+   sa2 = synthetic_Sa(prof.alt,cl,(prof.h2o*perr).^2);
+   %sa2 = cov_prof.h2o;
     
     %sa = blkdiag(cov_prof.tdry, cov_prof.h2o);
     %sa = blkdiag(sa1, cov_prof.h2o);
@@ -84,6 +84,8 @@ for i =1:n
         se = generateSE(y,wn,se);
         
     end
+    
+    se = diag(ones(size(y))*1.0e-14);
     
     sa = blkdiag(sa1,sa2);
     
@@ -96,8 +98,13 @@ for i =1:n
     %Then perform the retrievals with the starting 'mean' profiles,
     %measurement vector and retrieval arguments
     
+    
+    channelMask = true(size(y));
+    stateMask =  [true(size(prof.alt));prof.alt<15];
+    
     [xhat_final, convergence_met, iter, xhat, G, A, K, hatS,Fxhat,final_prof] = ...
-        simple_nonlinear_retrieval2(prof,sa,y, se, wnRange, lblArgs, aJParams);
+        simple_nonlinear_retrieval2(prof,sa,y, se, wnRange, lblArgs, aJParams,...
+        true,channelMask,stateMask);
     
     
     

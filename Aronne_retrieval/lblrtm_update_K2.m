@@ -1,5 +1,5 @@
 function [Knew,ynew,lblrtm_success] = ...
-    lblrtm_update_K2(xhat, prior_prof, wavenum, lblArgs, aJParams, defaultAtm,cleanup_work_dir)
+    lblrtm_update_K2(xhat, prior_prof, wavenum, lblArgs, aJParams, defaultAtm,cleanup_work_dir,state_mask)
 
 
 
@@ -11,7 +11,7 @@ function [Knew,ynew,lblrtm_success] = ...
 % simple_matlab_AJ_lblrun to interface to LBLRTM.
 %
 % Outputs are K,y, and a flag denoting success/failure of the LBLRTM run.
-% (will be set to false if either run, e.g. the run to compute y or the 
+% (will be set to false if either run, e.g. the run to compute y or the
 % run to compute K, indicated failure)
 %
 % This is not quite a general function, and it is tied to the T-Q
@@ -20,16 +20,16 @@ function [Knew,ynew,lblrtm_success] = ...
 % Inputs: xhat - state vector with T and ln(q), which will be used
 %   to compute the new y and K.
 % prior: structure containing other state parameters that are not
-%   being retrieved but are included in the fwd model (all are required): 
+%   being retrieved but are included in the fwd model (all are required):
 %   pressure [hPa], alt [km], (at each level),  ln(ppmv) at each level
 %   for the following minor gasses: co2, o3, n2o, co, ch4, and
 %   finally Tsurf [K].
 % wavenum: wavenumber range for the monochromatic LBLRTM
 %   calculation.
-% FTSparams: FT Spectrometer parameters (see create_tape5.m in 
+% FTSparams: FT Spectrometer parameters (see create_tape5.m in
 %   lblrtm_wrap.)
 % cleanup_work_dir: logical (default is true), specifying whether
-%   the LBLRTM work directory should be deleted. 
+%   the LBLRTM work directory should be deleted.
 
 if ~exist('cleanup_work_dir','var')
     cleanup_work_dir = true;
@@ -48,30 +48,51 @@ if ~exist('defaultAtm','var')
     
 end
 
+if ~exist('state_mask','var')
+    
+    state_mask = true(length(aJParams)*length(prior_prof.tdry),1);
+    
+end
+
 
 prof = prior_prof;
 
 allMols = lower(molecules());
 ix = 1;
+ix2 = 1;
 delta = length(prof.tdry);
+
 
 for i=1:length(aJParams)
     p = aJParams(i);
-    vec = xhat(ix:ix+delta-1);
     
-    if p==0
+    
+    tf = state_mask(ix:ix+delta-1);
+    
+    delta2 = nnz(tf);
+    
+    if delta2>0
         
+        vec = xhat(ix2:ix2+delta2-1);
         
-        prof.tdry=vec;
-        
-    elseif p>0
-        
-        m = allMols{p};
-        
-        prof.(m)=exp(vec);
+        if p==0
+            
+            
+            prof.tdry(tf)=vec;
+            
+        elseif p>0
+            
+            m = allMols{p};
+            
+            prof.(m)(tf)=exp(vec);
+            
+        end
         
     end
     ix = ix+delta;
+    ix2 = ix2+delta2;
+    
+    
 end
 
 
@@ -107,7 +128,7 @@ lblArgsWithAJ{end+1} = aJParams;
 
 [wavenum_grid, ynew, tau, lblrtm_success_y] = simple_matlab_lblrun(...
     cleanup_work_dir, defaultAtm, prof, wavenum, lblArgs{:}); %#ok<ASGLU>
-    
+
 %t5arglist = [t5arglist, {'CalcJacobian'}, {[0 1]}];
 [wavenum_grid, Knew, lblrtm_success_K] = simple_matlab_AJ_lblrun(...
     cleanup_work_dir, defaultAtm, prof, wavenum,  lblArgsWithAJ{:}); %#ok<ASGLU>
