@@ -55,7 +55,7 @@ if ~exist('state_mask','var')
 end
 
 
-prof = updateProfile(xhat,priorProf,aJParams,state_mask);
+prof = updateProfile(xhat,prior_prof,aJParams,state_mask);
 
 % prof = prior_prof;
 % 

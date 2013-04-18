@@ -2,7 +2,7 @@ function [ profOut] = updateProfile(vec,profIn,aJParams,stateMask,convFunMap )
 
 if ~exist('stateMask','var')
    
-    stateMask = false(length(aJParams)*profIn.tdry,1);
+    stateMask = false(length(aJParams)*length(profIn.tdry),1);
     stateMask(1:length(vec))=true;
     
     
@@ -44,7 +44,7 @@ for i = 1:length(aJParams)
         
             param = 'tdry';
         else
-            param = allMols(mIx);
+            param = allMols{mIx};
         
         end
     
