@@ -1,0 +1,13 @@
+function [stateVec ] = extractStateVector(profile,aJParams,stateMask)
+
+
+allMols = lower(molecu
+
+
+for i =1:length(aJParams)
+    
+end
+
+
+end
+

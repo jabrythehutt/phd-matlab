@@ -9,13 +9,12 @@ end
 
 if ~exist('stateMask','var')
     
-    stateMask = false(length(aJParams)*length(priorProf.tdry),1);
-    stateMask(1:size(hatS,1))=true;
+    stateMask = true(length(aJParams)*length(priorProf.tdry),1);
 end
 
 if ~exist('convMap','var')
     convMap = containers.Map('KeyType','uint32','ValueType','any');
-    convMap(1) = @(x,y)exp(x);
+    convMap(1) = @(x,y)
     
     
 end
@@ -40,23 +39,14 @@ delta = length(priorProf.tdry);
 
 for i =1:length(aJParams)
     
-    
+    convFn  = @(x,y)x;
     m = aJParams(i);
     param = 'tdry';
     paramProp = 'Temperature';
     tf = stateMask(ix:ix+delta-1);
     delta2 = nnz(tf);
     
-    
     if delta2>0
-
-        convFun  = @(x,y)x;
-        if isKey(convMap,m)
-            
-           convFun = @(x,y)exp(x); 
-        end
-        
-        
         if m==0
             
             %Temperature
@@ -70,7 +60,7 @@ for i =1:length(aJParams)
             
             %Molecule
             
-            
+            convFn  = @(x,y)exp(x);
             
             param = allMols{m};
             paramProp = upper(param);
@@ -89,16 +79,16 @@ for i =1:length(aJParams)
         
         
         priorCovs{i} = priorCov ;%convertCovariance(priorCov,priorVec,convFn);
-        h = [h,plotCov(priorProf.alt(tf),priorCov,'Altitude (km)',['Prior ',paramProp,' covariance'])];
+        h = [h,plotCov(priorProf.alt,priorCov,'Altitude (km)',['Prior ',paramProp,' covariance'])];
         
-        finalCovs{i} = convertCovariance(finalCov,finalVec,convFun);
+        finalCovs{i} = convertCovariance(finalCov,finalVec,convFn);
         
-        h = [h,plotCov(priorProf.alt(tf),finalCovs{i},'Altitude (km)',['Final ',paramProp,' covariance'])];
+        h = [h,plotCov(priorProf.alt,finalCovs{i},'Altitude (km)',['Final ',paramProp,' covariance'])];
         
     end
     
     ix = ix+delta;
-    ix2 = ix2+delta2;
+    ix2 = ix2+delta;
     
     
     
@@ -110,8 +100,7 @@ end
         
         pcolor(x,x,cv);
         shading flat;
-        g = colorbar;
-        set(g,'fontsize',12);
+        colorbar;
         title(ttle,'fontsize',13);
         xlabel(xlbl,'fontsize',12);
         ylabel(xlbl,'fontsize',12);
