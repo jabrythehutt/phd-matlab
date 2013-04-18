@@ -1,7 +1,7 @@
 
 %Create a truth profile based on tropical 
 setenv('LBL_HOME','/home/dj104/lblrtm/LBL_HOME');
-mols = true(size(lower(molecules(1:20))));
+mols = true(size(lower(molecules(1:10))));
 allMols= lower(molecules());
 
 truthProf = load('/home/dj104/Retrieval/Profiles/B467_r06_PDG_profile.mat');

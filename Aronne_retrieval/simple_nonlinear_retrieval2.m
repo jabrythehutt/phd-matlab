@@ -109,11 +109,14 @@ end
 
 if ~exist('state_mask','var')
     state_mask = true(length(aJParams)*length(prior_prof.tdry),1);
+    
+
 end
 
 if ~exist('channel_mask','var')
     
     channel_mask = true(length(fully),1);
+    
 end
 
 if ~exist('defaultAtm','var')
@@ -167,7 +170,7 @@ for i =1:length(aJParams)
 end
 
 
-inv_Sa = inv(Sa);
+inv_Sa = inv(Sa(state_mask,state_mask));
 
 % apply channel sub mask
 
@@ -192,6 +195,7 @@ hatS = cell(max_iteration_count,1);
 
 fullx=xa;
 %xhat{1} = xa;
+xa = xa(state_mask);
 
 xhat{1} = fullx;
 
@@ -210,16 +214,16 @@ while ~convergence_met && (iter <= max_iteration_count)
         %Fxhat{iter} = Fxhat{iter-1};
         %fullx(state_mask)=xhat{iter};
         
-        fullx=xhat{iter};
+        x=xhat{iter};
         
         [newFullK, newy, lblrtm_success] = ...
-            lblrtm_update_K2(fullx, prior_prof,wnRange,lblArgs, aJParams, defaultAtm,cleanup_work_dir);
+            lblrtm_update_K2(x, prior_prof,wnRange,lblArgs, aJParams, defaultAtm,cleanup_work_dir,state_mask);
         
         
         
         % note this is not a full K - only the first 2 rows
         % (Tsurf & esurf) need to be dropped.
-        if size(newFullK,2) ~= length(xa);
+        if size(newFullK,2) ~= length(fullx);
             disp(['Fwd model did not return a full sized K, returning ' ...
                   'failed run']);
             lblrtm_success = false;
@@ -260,17 +264,17 @@ while ~convergence_met && (iter <= max_iteration_count)
     
     hatS{iter} = inv(inv_hatS);
     
-    inv_Se = inv(Se);
-     inv_hatS2 = kiter' * inv_Se * kiter + inv_Sa;
-     hatS2 = inv(inv_hatS2);
-     G2 = hatS2 * kiter' * inv_Se;
-     A2 = G2 * kiter;
+%     inv_Se = inv(Se);
+%      inv_hatS2 = kiter' * inv_Se * kiter + inv_Sa;
+%      hatS2 = inv(inv_hatS2);
+%      G2 = hatS2 * kiter' * inv_Se;
+%      A2 = G2 * kiter;
 
      
     ylocal = y - fxhatiter + kiter*(xhatiter - xa);
     
      xhatin = G{iter} * ylocal + xa;
-     xhatin2 = G2*ylocal+xa;
+     %xhatin2 = G2*ylocal+xa;
      
 
     xhat{iter+1} = xhat{iter};
