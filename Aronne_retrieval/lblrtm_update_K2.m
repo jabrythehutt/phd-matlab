@@ -55,45 +55,47 @@ if ~exist('state_mask','var')
 end
 
 
-prof = prior_prof;
+prof = updateProfile(xhat,priorProf,aJParams,state_mask);
 
-allMols = lower(molecules());
-ix = 1;
-ix2 = 1;
-delta = length(prof.tdry);
-
-
-for i=1:length(aJParams)
-    p = aJParams(i);
-    
-    
-    tf = state_mask(ix:ix+delta-1);
-    
-    delta2 = nnz(tf);
-    
-    if delta2>0
-        
-        vec = xhat(ix2:ix2+delta2-1);
-        
-        if p==0
-            
-            
-            prof.tdry(tf)=vec;
-            
-        elseif p>0
-            
-            m = allMols{p};
-            
-            prof.(m)(tf)=exp(vec);
-            
-        end
-        
-    end
-    ix = ix+delta;
-    ix2 = ix2+delta2;
-    
-    
-end
+% prof = prior_prof;
+% 
+% allMols = lower(molecules());
+% ix = 1;
+% ix2 = 1;
+% delta = length(prof.tdry);
+% 
+% 
+% for i=1:length(aJParams)
+%     p = aJParams(i);
+%     
+%     
+%     tf = state_mask(ix:ix+delta-1);
+%     
+%     delta2 = nnz(tf);
+%     
+%     if delta2>0
+%         
+%         vec = xhat(ix2:ix2+delta2-1);
+%         
+%         if p==0
+%             
+%             
+%             prof.tdry(tf)=vec;
+%             
+%         elseif p>0
+%             
+%             m = allMols{p};
+%             
+%             prof.(m)(tf)=exp(vec);
+%             
+%         end
+%         
+%     end
+%     ix = ix+delta;
+%     ix2 = ix2+delta2;
+%     
+%     
+% end
 
 
 

@@ -309,30 +309,32 @@ xhat_final=xhat{end};
 
 
 %Create an output profile by converting back from log
-final_prof = prior_prof;
+final_prof = updateProfile(xhatin,prior_prof,aJParams,state_mask);
 
-allMols = lower(molecules());
-ix = 1;
-delta = length(final_prof.tdry);
 
-for i=1:length(aJParams)
-    p = aJParams(i);
-    vec = xhat_final(ix:ix+delta-1);
-    
-    if p==0
-        
-        
-        final_prof.tdry=vec;
-        
-    elseif p>0
-        
-        m = allMols{p};
-        
-        final_prof.(m)=exp(vec);
-        
-    end
-    ix = ix+delta;
-end
+
+% allMols = lower(molecules());
+% ix = 1;
+% delta = length(final_prof.tdry);
+% 
+% for i=1:length(aJParams)
+%     p = aJParams(i);
+%     vec = xhat_final(ix:ix+delta-1);
+%     
+%     if p==0
+%         
+%         
+%         final_prof.tdry=vec;
+%         
+%     elseif p>0
+%         
+%         m = allMols{p};
+%         
+%         final_prof.(m)=exp(vec);
+%         
+%     end
+%     ix = ix+delta;
+% end
 
 
 
