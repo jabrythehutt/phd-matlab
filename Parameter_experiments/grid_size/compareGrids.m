@@ -75,7 +75,7 @@ for i =1:n
    %sa1 = synthetic_Sa(prof.alt,cl,(prof.tdry*perr).^2);
    sa1 = synthetic_Sa(prof.alt,cl,ones(size(prof.tdry)));
    %sa2 = synthetic_Sa(prof.alt,cl,(prof.h2o*perr).^2);
-   sa2 = cov_prof.h2o;
+   sa2 = cov_prof.h2o./10;
     
     %sa = blkdiag(cov_prof.tdry, cov_prof.h2o);
     %sa = blkdiag(sa1, cov_prof.h2o);
