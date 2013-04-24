@@ -138,8 +138,8 @@ truth_profile.h2o(1:7) = ...
 
 % Add simulated instrument noise - fix the rand seed so this is
 % repeatable
-s = RandStream('mt19937ar','seed',9);
-RandStream.setDefaultStream(s);
+% s = RandStream('mt19937ar','seed',9);
+% RandStream.setDefaultStream(s);
 %obs_radiance = obs_radiance + sqrt(diag(se)).*randn(length(wn),1);
 
 % run the retrieval
@@ -153,8 +153,8 @@ channel_mask = true(size(obs_radiance));
 state_mask = reshape(prior.h2o~=truth_profile.h2o,[],1);
 state_mask = [true(size(prior.tdry));state_mask];
                            
-[xhat_final, convergence_met, iter, xhat, G, A, K, hatS,Fxhat,final_prof] = ...
-        simple_nonlinear_retrieval2(prior,sa,obs_radiance, se, wnRange, lblArgs,...
+[xhat_final,iter, final_prof] = ...
+        LMRetrieval(prior,sa,obs_radiance, se, wnRange, lblArgs,...
         aJParams,prior.stdatm_flag,channel_mask,state_mask);                           
 
 % Recompute hatS (this is computed inside the nonlinear retrieval,

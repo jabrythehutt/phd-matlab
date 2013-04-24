@@ -1,0 +1,211 @@
+classdef ForwardModel
+    %FORWARDMODEL Summary of this class goes here
+    %   Detailed explanation goes here
+    
+    properties
+        aJParams;
+        lblArgs;
+        defaultAtm;
+        wnRange;
+        profile;
+        
+        currentStateVec;
+        currentJac;
+        currentRad;
+        currentWn;
+        
+        %'convMap' contains the functions used to convert the state vector to
+        %be compatible with the profile. 'invCovMap' does the inverse.
+        convMap;
+        invConvMap;
+        
+        stateMask;
+        channelMask
+        cleanWD;
+    end
+    
+    properties(Constant)
+        allMols = lower(molecules);
+        
+    end
+    
+    methods
+        
+        function fM = ForwardModel(profile,wnRange,lblArgs,aJParams,defaultAtm,convMap,invConvMap,channelMask,stateMask,cleanWD)
+            
+            fM.profile = profile;
+            fM.lblArgs = lblArgs;
+            fM.aJParams = aJParams;
+            fM.wnRange = wnRange;
+            
+            if ~exist('defaultAtm','var')
+                fM.defaultAtm = 1;
+            else
+                fM.defaultAtm = defaultAtm;
+                
+            end
+            
+            
+            if ~exist('convMap','var')
+                
+                
+                fM.convMap = containers.Map('KeyType','uint32','ValueType','any');
+                fM.convMap(1)=@(x)exp(x);
+                
+                fM.invConvMap = containers.Map('KeyType','uint32','ValueType','any');
+                fM.invConvMap(1)=@(x)log(x);
+                
+                
+            else
+                
+                fM.convMap = convMap;
+                fM.invConvMap = invConvMap;
+                
+                
+            end
+            
+            if ~exist('channelMask','var')
+                
+                fM.channelMask = [];
+                
+            else
+                fM.channelMask = channelMask;
+                
+            end
+            
+            if ~exist('stateMask','var')
+                
+                fM.stateMask = true(length(profile.tdry)*length(aJParams),1);
+            else
+                
+                fM.stateMask = stateMask;
+            end
+            
+            if exist('cleanWD','var')
+                fM.cleanWD = cleanWD;
+            else
+                fM.cleanWD = true;
+                
+            end
+            
+            fM.currentStateVec= [];
+            fM.currentJac = [];
+            fM.currentRad = [];
+            
+            
+        end
+        
+        
+        function [jac,wn] = calculateJacobian(fM,stateVec)
+            
+            
+            cached = false;
+            if ~isempty(fM.currentStateVec)
+                
+                if all(stateVec==fM.currentStateVec)
+                   
+                    if ~isempty(fM.currentJac)
+                        cached = true;
+                    end
+
+                end
+            end
+            
+            if ~cached
+                
+                [fM.currentJac,fM.currentWn] = doCalculateJacobian(fM,stateVec);
+                
+                fM.currentStateVecc 
+            end
+            
+            
+            
+        end
+        
+        function [rad,wn] = calculateRadiance(fM,stateVec)
+            
+           
+            
+            
+        end
+        
+        function [rad,wn]=doCalculateRadiance(fM,stateVec)
+            prof = updateProfile(stateVec,fM.profile,fM.aJParams,fM.stateMask,fM.convMap);
+            [wn, rad] = simple_matlab_lblrun(...
+                fM.cleanWD, fM.defaultAtm, prof, fM.wnRange, fM.lblArgs{:});
+            rad = rad(fM.channelMask);
+            
+        end
+        
+        
+        function [jac,wn]=doCalculateJacobian(fM,stateVec)
+            
+            
+            prof = updateProfile(stateVec,fM.profile,fM.aJParams,fM.stateMask,fM.convMap);
+            jacArgs = fM.lblArgs;
+            jacArgs{end+1}= 'CalcJacobian';
+            jacArgs{end+1} = fM.aJParams;
+            
+            [wn, jac] = simple_matlab_AJ_lblrun(...
+                fM.cleanWD, fM.defaultAtm, prof, fM.wnRange, jacArgs{:});
+            
+            %Convert sections of the Jacobian according to conversion map
+            
+            ix = 1;
+            delta = length(fM.profile.tdry);
+            
+            for i =1:length(fM.aJParams)
+                param = fM.aJParams(i);
+                subVec = stateVec(ix:ix+delta-1);
+                if(param==0)
+                    
+                    %Temperature Jacobian units are dT/dx so only convert
+                    %if a conversion factor is specified
+                    
+                    if isKey(fM.convMap,param)
+                        
+                        %Do conversion
+                        
+                        
+                    end
+                    
+                    
+                else
+                    
+                    doConv = true;
+                    %Molecular Jacobian units are dT/dln(x) so only convert
+                    %if the conversion factor is not exp(x);
+                    
+                    if isKey(fM.convMap,param)
+                        
+                        convFn = fM.convMap(param);
+                        if all(exp(subVec)==convFn(subVec))
+                            
+                            doConv = false;
+                        end
+
+                        
+                    end
+                    
+                    if doConv
+                        %Do conversion here
+                        
+                    end
+                    
+                    
+                end
+                
+                ix = ix+delta;
+                
+            end
+
+            
+            %Apply mask
+            jac = jac(fM.channelMask,fM.stateMask);
+            
+        end
+        
+    end
+    
+end
+

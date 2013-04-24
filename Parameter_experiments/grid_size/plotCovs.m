@@ -89,11 +89,15 @@ for i =1:length(aJParams)
         
         
         priorCovs{i} = priorCov ;%convertCovariance(priorCov,priorVec,convFn);
-        h = [h,plotCov(priorProf.alt(tf),priorCov,'Altitude (km)',['Prior ',paramProp,' covariance'])];
-        
         finalCovs{i} = convertCovariance(finalCov,finalVec,convFun);
+        clms = [min(min(min(priorCov)),min(min(finalCovs{i}))),max(max(max(priorCov)),max(max(finalCovs{i})))];
         
+        
+        h = [h,plotCov(priorProf.alt(tf),priorCov,'Altitude (km)',['Prior ',paramProp,' covariance'])];
+        caxis(clms);
+
         h = [h,plotCov(priorProf.alt(tf),finalCovs{i},'Altitude (km)',['Final ',paramProp,' covariance'])];
+        caxis(clms);
         
     end
     
